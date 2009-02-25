@@ -1,0 +1,13 @@
+<!--
+  vi:ts=2:sw=2:expandtab
+-->
+<ivysettings>
+  <resolvers>
+    <chain name="main" dual="true">
+      <resolver ref="shared"/>
+      <resolver ref="repository.jboss.org"/>
+      <resolver ref="snapshots.jboss.org"/>
+      <resolver ref="public"/>
+    </chain>
+  </resolvers>
+</ivysettings>

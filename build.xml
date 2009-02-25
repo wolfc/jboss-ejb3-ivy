@@ -1,0 +1,52 @@
+<!--
+   vi:ts=3:sw=3:expandtab:
+-->
+<project name="jboss-ejb3-ivy" xmlns:ivy="antlib:org.apache.ivy.ant"
+   default="package">
+   <path id="ivy.lib.path">
+      <fileset dir="/opt/apache-ivy" includes="*.jar"/>
+   </path>
+   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
+   <ivy:settings file="src/main/ivy/ivysettings.xml"/>
+
+   <target name="compile" depends="resolve">
+      <ivy:cachepath pathid="compile.classpath" conf="compile"/>
+
+      <mkdir dir="target/classes"/>
+      <javac srcdir="src/main/java" destdir="target/classes" classpathref="compile.classpath"/>
+   </target>
+   
+   <target name="package" depends="compile">
+      <jar destfile="target/jboss-ejb3-ivy.jar">
+         <fileset dir="target/classes"/>
+      </jar>
+   </target>
+
+   <target name="resolve">
+      <ivy:resolve/>
+   </target>
+
+   <target name="test" depends="test-compile">
+      <mkdir dir="target/reports"/>
+      <junit printsummary="true">
+         <classpath>
+            <pathelement path="target/classes"/>
+            <pathelement path="target/test-classes"/>
+            <path refid="test.classpath"/>
+         </classpath>
+         <formatter type="plain"/>
+         <formatter type="xml"/>
+         <batchtest todir="target/reports">
+            <fileset dir="src/test/java" includes="**/*Test*.java"/>
+         </batchtest>
+      </junit>
+   </target>
+
+   <target name="test-compile" depends="compile">
+      <ivy:cachepath pathid="test.classpath" conf="test"/>
+
+      <mkdir dir="target/test-classes"/>
+      <javac srcdir="src/test/java" destdir="target/test-classes" classpathref="test.classpath"/>
+   </target>
+</project>

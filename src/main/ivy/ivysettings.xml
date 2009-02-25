@@ -1,0 +1,14 @@
+<!--
+  vi:ts=2:sw=2:expandtab:
+-->
+<ivysettings>
+  <settings defaultResolver="default"/>
+  <include url="ivysettings-jboss-snapshots.xml"/>
+  <include url="ivysettings-jboss-repo.xml"/>
+  <include url="${ivy.default.settings.dir}/ivysettings-public.xml"/>
+  <include url="${ivy.default.settings.dir}/ivysettings-shared.xml"/>
+  <include url="${ivy.default.settings.dir}/ivysettings-local.xml"/>
+  <!--include url="${ivy.default.settings.dir}/ivysettings-main-chain.xml"/-->
+  <include url="ivysettings-main-chain.xml"/>
+  <include url="${ivy.default.settings.dir}/ivysettings-default-chain.xml"/>
+</ivysettings>

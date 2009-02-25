@@ -1,0 +1,13 @@
+<!--
+  vi:ts=2:sw=2:expandtab:
+-->
+<ivysettings>
+  <resolvers>
+    <!-- version 1
+    <url name="snapshots.jboss.org" m2compatible="true">
+      <artifact pattern="http://snapshots.jboss.org/maven2/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+    </url>
+    -->
+    <ibiblio name="snapshots.jboss.org" m2compatible="true" usepoms="true" root="http://snapshots.jboss.org/maven2"/>
+  </resolvers>
+</ivysettings>

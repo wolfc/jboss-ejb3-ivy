@@ -1,0 +1,13 @@
+<!--
+  vi:ts=2:sw=2:expandtab:
+-->
+<ivysettings>
+  <resolvers>
+    <ibiblio name="repository.jboss.org" m2compatible="true" usepoms="true" root="http://repository.jboss.org/maven2"/>
+    <!--
+    <url name="repository.jboss.org" m2compatible="true">
+      <artifact pattern="http://repository.jboss.org/maven2/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+    </url>
+    -->
+  </resolvers>
+</ivysettings>

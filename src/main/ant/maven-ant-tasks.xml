@@ -1,0 +1,31 @@
+<!--
+   vi:ts=3:sw=3:expandtab:
+-->
+<project xmlns:maven="urn:maven-artifact-ant"
+   xmlns:ivy="antlib:org.apache.ivy.ant">
+   <ivy:cachepath
+      pathid="maven-ant-tasks.classpath"
+      organisation="org.apache.maven"
+      module="maven-ant-tasks"
+      revision="2.0.9"
+      inline="true"
+      conf="default"/>
+   <ivy:cachepath
+      pathid="maven-wagon-webdav.classpath"
+      organisation="org.apache.maven.wagon"
+      module="wagon-webdav"
+      revision="1.0-beta-2"
+      inline="true"
+      conf="default"/>
+   <path id="maven-ant-full.classpath">
+      <path refid="maven-ant-tasks.classpath"/>
+      <path refid="maven-wagon-webdav.classpath"/>
+   </path>
+   <typedef
+      classpathref="maven-ant-full.classpath"
+      uri="urn:maven-artifact-ant"
+      resource="org/apache/maven/artifact/ant/antlib.xml"/>
+
+   <maven:remoteRepository id="snapshots.jboss.org" url="dav:https://snapshots.jboss.org/maven2">
+   </maven:remoteRepository>
+</project>

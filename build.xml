@@ -1,14 +1,31 @@
 <!--
    vi:ts=3:sw=3:expandtab:
 -->
-<project name="jboss-ejb3-ivy" xmlns:ivy="antlib:org.apache.ivy.ant"
+<project name="jboss-ejb3-ivy" 
+   xmlns:ivy="antlib:org.apache.ivy.ant"
+   xmlns:maven="urn:maven-artifact-ant"
    default="package">
+
+   <!-- Setup Ivy -->
    <path id="ivy.lib.path">
       <fileset dir="/opt/apache-ivy" includes="*.jar"/>
+      <pathelement path="target/classes"/>
    </path>
-   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+   <!-- Because we're hacking our own task, we must share class loaders -->
+   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" loaderref="ivy.lib.path.loader"/>
 
+   <!-- Load settings -->
    <ivy:settings file="src/main/ivy/ivysettings.xml"/>
+
+   <import file="src/main/ant/maven-ant-tasks.xml"/>
+   <import file="src/main/ant/xpath-task.xml"/>
+
+   <!-- The current version -->
+   <property name="module.version.target" value="1.0"/>
+
+   <target name="clean-build" description="clean the project build files">
+      <delete includeemptydirs="true" dir="target"/>
+   </target>
 
    <target name="compile" depends="resolve">
       <ivy:cachepath pathid="compile.classpath" conf="compile"/>
@@ -16,18 +33,84 @@
       <mkdir dir="target/classes"/>
       <javac srcdir="src/main/java" destdir="target/classes" classpathref="compile.classpath"/>
    </target>
+
+   <!-- normally don't depend on xpath, it should be defined already -->
+   <target name="deploy" depends="package,makepom,define-xpath">
+      <xpath file="${user.home}/.m2/settings.xml" expression="/settings/servers/server[id='snapshots.jboss.org']/username" property="dav.username"/>
+      <xpath file="${user.home}/.m2/settings.xml" expression="/settings/servers/server[id='snapshots.jboss.org']/password" property="dav.password"/>
+      <maven:deploy file="target/jboss-ejb3-ivy.jar">
+         <pom file="target/pom.xml"/>
+         <!-- TODO: refid="snapshots.jboss.org" -->
+         <remoteRepository url="dav:https://snapshots.jboss.org/maven2">
+            <authentication username="${dav.username}" password="${dav.password}"/>
+         </remoteRepository>
+      </maven:deploy>
+   </target>
+
+   <!-- Normally depends on resolve, but we're doing ourselves -->
+   <target name="generatepom" depends="resolve">
+      <!--
+      <taskdef name="generatepom" classname="org.jboss.ejb3.ivy.ant.GeneratePom" classpathref="ivy.lib.path" loaderref="ivy.lib.path.loader"/>
+      <generatepom pomFile="target/pom.xml"/>
+      -->
+      <ivy:deliver/>
+   </target>
    
-   <target name="package" depends="compile">
+   <target name="ivy-new-version" unless="ivy.new.revision">
+      <property name="module.version.prefix" value="${module.version.target}-dev-"/>
+      <ivy:info/>
+      <ivy:buildnumber organisation="${ivy.organisation}" module="${ivy.module}" revision="${module.version.prefix}" defaultBuildNumber="1" revSep=""/>
+   </target>
+
+   <target name="local-version">
+      <tstamp>
+         <format property="now" pattern="yyyyMMddHHmmss" timezone="UTC"/>
+      </tstamp>
+      <property name="ivy.new.revision" value="${module.version.target}-${now}-local"/>
+   </target>
+
+   <target name="makepom" depends="resolve,local-version">
+      <!-- note that we use module.version.target and not version -->
+      <ivy:deliver 
+         deliverpattern="${ivy.distrib.dir}/[type]s/[artifact].[ext]"
+         pubdate="${now}" 
+         pubrevision="${module.version.target}-SNAPSHOT" 
+         status="integration"/>
+      <ivy:makepom 
+         ivyfile="${ivy.distrib.dir}/ivys/ivy.xml" 
+         pomfile="target/pom.xml">
+         <mapping conf="compile" scope="compile"/>
+      </ivy:makepom>
+   </target>
+
+   <target name="package" depends="version,compile"
+      description="package the output directory into a jar file">
       <jar destfile="target/jboss-ejb3-ivy.jar">
          <fileset dir="target/classes"/>
       </jar>
+   </target>
+
+   <target name="publish" depends="clean-build,package"
+      description="publish this project in the shared ivy repository">
+      <ivy:publish resolver="shared" pubrevision="${version}" status="milestone">
+         <artifacts pattern="target/[artifact].[ext]"/>
+      </ivy:publish>
+   </target>
+
+   <target name="publish-local" depends="local-version,package"
+      description="publish this project in the local ivy repository">
+      <ivy:publish resolver="local" pubrevision="${version}" pubdate="${now}"
+         status="integration" forcedeliver="true">
+         <artifacts pattern="target/[artifact].[ext]"/>
+      </ivy:publish>
    </target>
 
    <target name="resolve">
       <ivy:resolve/>
    </target>
 
-   <target name="test" depends="test-compile">
+   <target name="test" depends="test-compile"
+      description="execute all tests">
       <mkdir dir="target/reports"/>
       <junit printsummary="true">
          <classpath>
@@ -48,5 +131,11 @@
 
       <mkdir dir="target/test-classes"/>
       <javac srcdir="src/test/java" destdir="target/test-classes" classpathref="test.classpath"/>
+   </target>
+
+   <target name="version" depends="ivy-new-version">
+      <mkdir dir="target/ivy"/>
+      <echo message="version=${ivy.new.revision}" file="target/ivy/${ant.project.name}.properties" append="false"/>
+      <property file="target/ivy/${ant.project.name}.properties"/>
    </target>
 </project>

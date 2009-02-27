@@ -3,13 +3,13 @@
 -->
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-   <info organisation="org.jboss.ejb3" module="jboss-ejb3-ivy"/>
+   <info organisation="org.jboss.ejb3" module="jboss-ejb3-ivy" status="integration"/>
    <configurations>
       <conf name="compile"/>
       <conf name="test" extends="compile" visibility="private"/>
    </configurations>
    <dependencies>
-      <dependency org="org.apache.ivy" name="ivy" rev="2.0.0" conf="compile->default"/>
+      <dependency org="org.apache.ivy" name="ivy" rev="latest.release" conf="compile->default,optional,sources"/>
       <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
    </dependencies>
 </ivy-module>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+   <!-- since we are the xpath task, it must come in over a target -->
+   <target name="define-xpath" depends="compile">
+      <taskdef name="xpath" classname="org.jboss.ejb3.ivy.ant.XPathTask" classpath="target/classes"/>
+   </target>
+</project>

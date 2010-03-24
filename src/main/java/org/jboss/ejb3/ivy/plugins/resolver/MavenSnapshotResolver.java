@@ -656,7 +656,10 @@ public class MavenSnapshotResolver extends URLResolver
    public ResolvedModuleRevision parse(ResolvedResource mdRef, DependencyDescriptor dd, ResolveData data)
       throws ParseException
    {
+      //System.err.println("--> " + mdRef + ", " + dd + ", " + data);
       ResolvedModuleRevision rmr = super.parse(mdRef, dd, data);
+      if(rmr == null)
+	     return null;
       // patch in the resolved snapshot version
       ModuleRevisionId mrid = rmr.getId();
       DefaultModuleDescriptor descriptor = (DefaultModuleDescriptor) rmr.getDescriptor();

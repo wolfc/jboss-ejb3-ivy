@@ -4,9 +4,12 @@
 <ivysettings>
    <typedef name="maven-snapshot-resolver" classname="org.jboss.ejb3.ivy.plugins.resolver.MavenSnapshotResolver"/>
    <typedef name="maven-vm" classname="org.jboss.ejb3.ivy.plugins.version.MavenVersionMatcher"/>
-   <settings defaultResolver="snapshots.jboss.org"/>
+   <settings defaultResolver="main"/>
    <resolvers>
-      <maven-snapshot-resolver name="snapshots.jboss.org" m2compatible="true" usepoms="true" root="http://snapshots.jboss.org/maven2"/>
+      <chain name="main" dual="true">
+         <maven-snapshot-resolver name="snapshots.jboss.org" m2compatible="true" usepoms="true" root="http://snapshots.jboss.org/maven2"/>
+         <ibiblio name="repository.jboss.org" m2compatible="true" usepoms="true" root="http://repository.jboss.org/maven2"/>
+      </chain>
    </resolvers>
    <version-matchers>
       <exact-vm/>

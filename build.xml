@@ -6,13 +6,26 @@
    xmlns:maven="urn:maven-artifact-ant"
    default="package">
 
+   <!-- Bootstrap Ivy -->
+   <property name="ivy.version" value="2.0.0"/>
+   <property name="ivy.dir" value="${user.home}/.ivy2/cache/org.apache.ivy/jars"/>
+   <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
+   <mkdir dir="${ivy.dir}"/>
+   <!-- skipexisting needs ant 1.8 -->
+   <get usetimestamp="true" src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/${ivy.jar.name}" dest="${ivy.dir}/${ivy.jar.name}"/>
+   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpath="${ivy.dir}/${ivy.jar.name};target/classes"/>
+
    <!-- Setup Ivy -->
+   <!--
    <path id="ivy.lib.path">
       <fileset dir="/opt/apache-ivy" includes="*.jar"/>
       <pathelement path="target/classes"/>
    </path>
+   -->
    <!-- Because we're hacking our own task, we must share class loaders -->
+   <!--
    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" loaderref="ivy.lib.path.loader"/>
+   -->
 
    <!-- Load settings -->
    <ivy:settings file="src/main/ivy/ivysettings.xml"/>
@@ -31,7 +44,7 @@
       <ivy:cachepath pathid="compile.classpath" conf="compile"/>
 
       <mkdir dir="target/classes"/>
-      <javac srcdir="src/main/java" destdir="target/classes" classpathref="compile.classpath"/>
+      <javac debug="true" srcdir="src/main/java" destdir="target/classes" classpathref="compile.classpath"/>
    </target>
 
    <!-- normally don't depend on xpath, it should be defined already -->
@@ -80,6 +93,7 @@
          ivyfile="${ivy.distrib.dir}/ivys/ivy.xml" 
          pomfile="target/pom.xml">
          <mapping conf="compile" scope="compile"/>
+         <mapping conf="test" scope="test"/>
       </ivy:makepom>
    </target>
 
@@ -127,10 +141,14 @@
    </target>
 
    <target name="test-compile" depends="compile">
-      <ivy:cachepath pathid="test.classpath" conf="test"/>
+      <ivy:cachepath pathid="ivy.test.classpath" conf="test"/>
+      <path id="test.classpath">
+         <pathelement location="target/classes"/>
+         <path refid="ivy.test.classpath"/>
+      </path>
 
       <mkdir dir="target/test-classes"/>
-      <javac srcdir="src/test/java" destdir="target/test-classes" classpathref="test.classpath"/>
+      <javac debug="true" srcdir="src/test/java" destdir="target/test-classes" classpathref="test.classpath"/>
    </target>
 
    <target name="version" depends="ivy-new-version">

@@ -48,7 +48,8 @@
    </target>
 
    <!-- normally don't depend on xpath, it should be defined already -->
-   <target name="deploy" depends="package,makepom,define-xpath">
+   <target name="deploy" depends="package,makepom,define-xpath"
+      description="deploy the artifacts to the snapshot repository">
       <xpath file="${user.home}/.m2/settings.xml" expression="/settings/servers/server[id='snapshots.jboss.org']/username" property="dav.username"/>
       <xpath file="${user.home}/.m2/settings.xml" expression="/settings/servers/server[id='snapshots.jboss.org']/password" property="dav.password"/>
       <maven:deploy file="target/jboss-ejb3-ivy.jar">

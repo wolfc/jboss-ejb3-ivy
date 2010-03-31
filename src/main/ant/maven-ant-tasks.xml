@@ -9,14 +9,16 @@
       module="maven-ant-tasks"
       revision="2.0.9"
       inline="true"
-      conf="default"/>
+      conf="default"
+      log="download-only"/>
    <ivy:cachepath
       pathid="maven-wagon-webdav.classpath"
       organisation="org.apache.maven.wagon"
       module="wagon-webdav"
       revision="1.0-beta-2"
       inline="true"
-      conf="default"/>
+      conf="default"
+      log="download-only"/>
    <path id="maven-ant-full.classpath">
       <path refid="maven-ant-tasks.classpath"/>
       <path refid="maven-wagon-webdav.classpath"/>

@@ -1,0 +1,38 @@
+<!--
+   vi:ts=3:sw=3:expandtab:
+-->
+<project name="jboss-ivy-bootstrap" 
+   xmlns:ivy="antlib:org.apache.ivy.ant"
+   xmlns:ivyboot="antlib:org.apache.ivy.ant.bootstrap"
+   default="find-revision">
+
+   <!-- Bootstrap Ivy -->
+   <property name="ivy.version" value="2.0.0"/>
+   <property name="jboss-ejb3-ivy.version" value="1.0-SNAPSHOT"/>
+   <property name="ivy.dir" value="${user.home}/.ivy2/cache/org.apache.ivy/jars"/>
+   <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
+   <mkdir dir="${ivy.dir}"/>
+   <!-- skipexisting needs ant 1.8 -->
+   <get usetimestamp="true" src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/${ivy.jar.name}" dest="${ivy.dir}/${ivy.jar.name}"/>
+   <taskdef
+      classpath="${ivy.dir}/${ivy.jar.name}"
+      uri="antlib:org.apache.ivy.ant.bootstrap"
+      resource="org/apache/ivy/ant/antlib.xml"/>
+   <!-- make sure we can get to snapshots.jboss.org and repository.jboss.org -->
+   <!-- TODO: download ivysettings.xml (and other bits referenced) from somewhere -->
+   <ivyboot:settings
+      id="ivy.bootstrap.settings"
+      file="src/main/ivy/ivysettings.xml"/>
+   <ivyboot:cachepath
+      pathid="jboss-ejb3-ivy.classpath"
+      organisation="org.jboss.ejb3"
+      module="jboss-ejb3-ivy"
+      revision="${jboss-ejb3-ivy.version}"
+      inline="true"
+      settingsRef="ivy.bootstrap.settings"
+      log="download-only"/>
+   <taskdef
+      classpathref="jboss-ejb3-ivy.classpath"
+      uri="antlib:org.apache.ivy.ant"
+      resource="org/apache/ivy/ant/antlib.xml"/>
+</project>
